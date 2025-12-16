@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import type { Order } from '@/lib/types';
@@ -25,6 +25,13 @@ export function OtpForm({ order }: { order: Order }) {
   const router = useRouter();
   const { toast } = useToast();
   const { updateOrder } = useOrders();
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (verified && audioRef.current) {
+      audioRef.current.play();
+    }
+  }, [verified]);
 
   const handleResendOtp = () => {
     setLoading(true);
@@ -56,7 +63,7 @@ export function OtpForm({ order }: { order: Order }) {
           title: 'Delivery Confirmed!',
           description: `Order ${order.id} marked as delivered.`,
         });
-        setTimeout(() => router.push(`/order/${order.id}`), 2000);
+        setTimeout(() => router.push(`/order/${order.id}`), 2500);
       } else {
         toast({
           variant: 'destructive',
@@ -72,6 +79,7 @@ export function OtpForm({ order }: { order: Order }) {
   if (verified) {
     return (
       <div className="flex flex-col items-center gap-4 text-center text-green-600">
+        <audio ref={audioRef} src="https://firebasestudio.page.link/cha-ching.mp3" preload="auto" />
         <CheckCircle2 className="h-16 w-16" />
         <h3 className="text-xl font-bold">Delivery Verified!</h3>
         <p className="text-sm text-muted-foreground">Redirecting to order details...</p>
