@@ -6,9 +6,16 @@ import { useToast } from '@/hooks/use-toast';
 import type { Order } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
+import { CheckCircle2, Loader2, MessageSquareText } from 'lucide-react';
 import { useOrders } from '@/context/orders-context';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 
+
+// In a real application, this would be generated server-side and sent via SMS.
 const MOCK_OTP = '123456';
 
 export function OtpForm({ order }: { order: Order }) {
@@ -19,11 +26,23 @@ export function OtpForm({ order }: { order: Order }) {
   const { toast } = useToast();
   const { updateOrder } = useOrders();
 
+  const handleResendOtp = () => {
+    setLoading(true);
+    // Simulate API call to resend OTP
+    setTimeout(() => {
+      toast({
+        title: 'OTP Sent!',
+        description: `A new OTP has been sent to ...${order.mobileNumber.slice(-4)}.`,
+      });
+      setLoading(false);
+    }, 1000);
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
+    // Simulate API call to verify OTP
     setTimeout(() => {
       if (otp === MOCK_OTP) {
         setVerified(true);
@@ -61,6 +80,14 @@ export function OtpForm({ order }: { order: Order }) {
   }
 
   return (
+    <>
+    <Alert className="mb-4">
+        <MessageSquareText className="h-4 w-4" />
+        <AlertTitle>OTP Sent!</AlertTitle>
+        <AlertDescription>
+         For demo purposes, the OTP is <strong>{MOCK_OTP}</strong>. In a real app, this would be sent via SMS.
+        </AlertDescription>
+      </Alert>
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Input
         type="tel"
@@ -68,16 +95,17 @@ export function OtpForm({ order }: { order: Order }) {
         placeholder="Enter 6-digit OTP"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}
-        className="text-center text-lg tracking-[0.5em]"
+        className="text-center text-lg tracking-[0.5em] h-12"
         disabled={loading}
       />
-      <Button type="submit" disabled={loading || otp.length !== 6}>
+      <Button type="submit" disabled={loading || otp.length !== 6} size="lg">
         {loading && <Loader2 className="animate-spin" />}
         {loading ? 'Verifying...' : 'Verify & Confirm Delivery'}
       </Button>
-      <Button variant="link" type="button" disabled={loading} className="text-muted-foreground">
+      <Button variant="link" type="button" onClick={handleResendOtp} disabled={loading} className="text-muted-foreground">
         Resend OTP
       </Button>
     </form>
+    </>
   );
 }
