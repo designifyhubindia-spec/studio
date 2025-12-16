@@ -29,7 +29,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)] p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle>OTP Verification</CardTitle>

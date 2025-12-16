@@ -30,7 +30,7 @@ export type DeliveryInsightsInput = z.infer<typeof DeliveryInsightsInputSchema>;
 
 const DeliveryInsightsOutputSchema = z.object({
   flagForReview: z.boolean().describe('Whether the delivery should be flagged for closer human review.'),
-  reason: z.string().describe('The reason why the delivery is flagged for review.'),
+  reason: z.string().describe('The reason why the delivery is flagged for review. This should be concise and actionable.'),
 });
 
 export type DeliveryInsightsOutput = z.infer<typeof DeliveryInsightsOutputSchema>;
@@ -43,28 +43,32 @@ const deliveryInsightsPrompt = ai.definePrompt({
   name: 'deliveryInsightsPrompt',
   input: {schema: DeliveryInsightsInputSchema},
   output: {schema: DeliveryInsightsOutputSchema},
-  prompt: `You are an AI assistant that analyzes delivery data to identify potential issues.
+  prompt: `You are an expert AI assistant for a perfume delivery service, specializing in logistics and fraud detection. Your task is to analyze delivery data and flag potential issues that require human review.
 
-  Based on the following delivery information, determine if the delivery should be flagged for closer human review.
+  Analyze the following delivery information and determine if it should be flagged.
 
-  Consider factors such as order status, payment type, and available location data.
-  If the order status is still pending after a long time, or there are discrepancies between payment type and order status, or location data greatly differs from delivery address, or other anomalies are detected, flag the delivery for review.
+  Key factors to consider:
+  - **Payment Mismatch:** High-value Cash on Delivery (COD) orders are higher risk. Flag if a high-priced item is COD.
+  - **Status Anomalies:** Flag if an order is 'Pending' for an unusually long time without being shipped.
+  - **Location Discrepancy:** If GPS location data is available, compare it with the delivery address. Flag for significant mismatches.
+  - **Unusual Patterns:** Look for anything out of the ordinary, like bulk orders of a single perfume to a residential address, which might indicate resale.
+  - **COD on 'Delivered' Status:** If an order is COD and marked as 'Delivered (OTP verified)', it's generally a good sign, but cross-reference with other factors. A COD order delivered without location data might be worth a second look.
+  - **Prepaid Orders:** These are generally lower risk but are not immune to issues.
 
-  Order ID: {{{orderId}}}
-  Customer Name: {{{customerName}}}
-  Mobile Number: {{{mobileNumber}}}
-  Delivery Address: {{{deliveryAddress}}}
-  Product Name: {{{productName}}}
-  Quantity: {{{quantity}}}
-  Price: {{{price}}}
-  Payment Type: {{{paymentType}}}
-  Order Status: {{{orderStatus}}}
-  Delivery Date: {{{deliveryDate}}}
-  Delivery Time: {{{deliveryTime}}}
-  Location Data: {{{locationData}}}
+  Delivery Data:
+  - Order ID: {{{orderId}}}
+  - Customer: {{{customerName}}}
+  - Mobile: {{{mobileNumber}}}
+  - Address: {{{deliveryAddress}}}
+  - Product: {{{productName}}} (x{{{quantity}}})
+  - Price: ₹{{{price}}}
+  - Payment: {{{paymentType}}}
+  - Status: {{{orderStatus}}}
+  - Delivery Timestamp: {{{deliveryDate}}} {{{deliveryTime}}}
+  - GPS Location: {{{locationData}}}
 
-  Set flagForReview to true if the delivery should be reviewed, otherwise set it to false.
-  Provide a brief reason for your decision in the reason field.
+  Based on your analysis, set \`flagForReview\` to \`true\` if a human should investigate, or \`false\` otherwise.
+  In the \`reason\` field, provide a clear, concise, and actionable explanation for your decision.
   `,
 });
 
