@@ -1,5 +1,6 @@
 'use client';
-
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -9,17 +10,42 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { Bot, FileText, QrCode } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { FileText, QrCode, Trash2 } from 'lucide-react';
 import type { Order } from '@/lib/types';
 import { OrderStatusBadge } from '../dashboard/order-status-badge';
 import { AiInsights } from './ai-insights';
-import Link from 'next/link';
+import { useOrders } from '@/context/orders-context';
+import { useToast } from '@/hooks/use-toast';
 
 type OrderDetailsClientProps = {
   order: Order;
 };
 
 export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
+  const router = useRouter();
+  const { deleteOrder } = useOrders();
+  const { toast } = useToast();
+
+  const handleDelete = () => {
+    deleteOrder(order.id);
+    toast({
+      title: 'Order Deleted',
+      description: `Order ${order.id} has been removed.`,
+    });
+    router.push('/');
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <div className="lg:col-span-2">
@@ -82,6 +108,29 @@ export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
                 Verify Delivery (Scan)
               </Link>
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 />
+                  Delete Order
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the
+                    order {order.id}.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </CardContent>
         </Card>
         <AiInsights order={order} />

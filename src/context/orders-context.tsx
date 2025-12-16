@@ -9,6 +9,7 @@ type OrdersContextType = {
   addOrder: (order: Order) => void;
   updateOrder: (orderId: string, updatedOrder: Partial<Order>) => void;
   getOrderById: (orderId: string) => Order | undefined;
+  deleteOrder: (orderId: string) => void;
 };
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -32,8 +33,12 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     return orders.find((order) => order.id === orderId);
   };
 
+  const deleteOrder = (orderId: string) => {
+    setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+  };
+
   return (
-    <OrdersContext.Provider value={{ orders, addOrder, updateOrder, getOrderById }}>
+    <OrdersContext.Provider value={{ orders, addOrder, updateOrder, getOrderById, deleteOrder }}>
       {children}
     </OrdersContext.Provider>
   );
