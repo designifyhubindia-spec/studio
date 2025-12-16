@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import type { Order } from '@/lib/types';
-import { orders } from '@/lib/data';
+import { useOrders } from '@/context/orders-context';
 
 const orderFormSchema = z.object({
   customerName: z.string().min(2, 'Customer name is required.'),
@@ -46,6 +45,8 @@ type OrderFormValues = z.infer<typeof orderFormSchema>;
 export function OrderForm() {
   const router = useRouter();
   const { toast } = useToast();
+  const { addOrder } = useOrders();
+  
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
@@ -55,17 +56,13 @@ export function OrderForm() {
   });
 
   const onSubmit = (data: OrderFormValues) => {
-    // In a real app, you would send this data to your backend.
-    // For this demo, we'll just simulate it.
     const newOrder: Order = {
-      id: `ST-${Math.floor(Math.random() * 1000000)}`,
+      id: `ST-${Math.floor(100000 + Math.random() * 900000)}`,
       status: 'Pending',
       ...data,
     };
     
-    // This is for demo purposes to show the new order in the list.
-    // In a real application, you'd re-fetch or use a state management library.
-    orders.unshift(newOrder);
+    addOrder(newOrder);
 
     toast({
       title: 'Order Created!',

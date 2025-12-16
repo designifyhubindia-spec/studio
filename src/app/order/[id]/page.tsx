@@ -1,17 +1,31 @@
-import { orders } from '@/lib/data';
+'use client';
 import { OrderDetailsClient } from '@/components/order/order-details-client';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useOrders } from '@/context/orders-context';
+import { useEffect, useState } from 'react';
+import type { Order } from '@/lib/types';
 
-type OrderPageProps = {
-  params: { id: string };
-};
+export default function OrderPage() {
+  const params = useParams();
+  const { getOrderById } = useOrders();
+  const [order, setOrder] = useState<Order | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
-export default function OrderPage({ params }: OrderPageProps) {
-  const order = orders.find((o) => o.id === params.id);
+  useEffect(() => {
+    if (params.id) {
+      const foundOrder = getOrderById(params.id as string);
+      setOrder(foundOrder);
+    }
+    setLoading(false);
+  }, [params.id, getOrderById]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
   if (!order) {
     notFound();
   }

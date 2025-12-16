@@ -1,5 +1,4 @@
 import { OrderListClient } from '@/components/dashboard/order-list-client';
-import { orders } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
@@ -21,7 +20,7 @@ export default function DashboardPage() {
           </Link>
         </Button>
       </div>
-      <OrderListClient initialOrders={orders} />
+      <OrderListClient />
     </div>
   );
 }

@@ -2,14 +2,29 @@
 import { Button } from '@/components/ui/button';
 import { QrCode, ScanLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useOrders } from '@/context/orders-context';
+import { useToast } from '@/hooks/use-toast';
 
 export function QrScanner() {
   const router = useRouter();
+  const { orders } = useOrders();
+  const { toast } = useToast();
 
   const handleScan = () => {
     // In a real app, this would come from a QR scanner library
-    const scannedOrderId = 'ST-240703'; 
-    router.push(`/delivery/${scannedOrderId}/verify`);
+    // For this demo, we'll pick a random "Out for Delivery" order
+    const outForDeliveryOrders = orders.filter(o => o.status === 'Out for Delivery');
+    
+    if (outForDeliveryOrders.length > 0) {
+      const randomOrder = outForDeliveryOrders[Math.floor(Math.random() * outForDeliveryOrders.length)];
+      router.push(`/delivery/${randomOrder.id}/verify`);
+    } else {
+       toast({
+        variant: "destructive",
+        title: "No Orders to Verify",
+        description: "There are no orders currently 'Out for Delivery' to verify.",
+      });
+    }
   };
 
   return (

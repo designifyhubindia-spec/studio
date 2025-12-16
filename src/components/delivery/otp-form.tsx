@@ -7,6 +7,7 @@ import type { Order } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
+import { useOrders } from '@/context/orders-context';
 
 const MOCK_OTP = '123456';
 
@@ -16,6 +17,7 @@ export function OtpForm({ order }: { order: Order }) {
   const [verified, setVerified] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { updateOrder } = useOrders();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,11 +27,16 @@ export function OtpForm({ order }: { order: Order }) {
     setTimeout(() => {
       if (otp === MOCK_OTP) {
         setVerified(true);
+        const now = new Date();
+        updateOrder(order.id, { 
+          status: 'Delivered (OTP verified)',
+          deliveryDate: now.toISOString().split('T')[0],
+          deliveryTime: now.toTimeString().split(' ')[0].slice(0, 5),
+        });
         toast({
           title: 'Delivery Confirmed!',
           description: `Order ${order.id} marked as delivered.`,
         });
-        // In a real app, you would update the backend here.
         setTimeout(() => router.push(`/order/${order.id}`), 2000);
       } else {
         toast({

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { MainLayout } from '@/components/layout/main-layout';
+import { OrdersProvider } from '@/context/orders-context';
 
 export const metadata: Metadata = {
   title: 'ScentTrack Delivery',
@@ -24,7 +25,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <MainLayout>{children}</MainLayout>
+        <OrdersProvider>
+          <MainLayout>{children}</MainLayout>
+        </OrdersProvider>
         <Toaster />
       </body>
     </html>

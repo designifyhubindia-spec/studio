@@ -8,31 +8,11 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { OrderCard } from './order-card';
-import type { Order, OrderStatus } from '@/lib/types';
-import { Button } from '../ui/button';
-import { ListFilter } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+import type { OrderStatus } from '@/lib/types';
+import { useOrders } from '@/context/orders-context';
 
-type OrderListClientProps = {
-  initialOrders: Order[];
-};
-
-const statusFilters: OrderStatus[] = [
-  'Pending',
-  'Shipped',
-  'Out for Delivery',
-  'Delivered (OTP verified)',
-];
-
-export function OrderListClient({ initialOrders }: OrderListClientProps) {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+export function OrderListClient() {
+  const { orders } = useOrders();
   const [activeTab, setActiveTab] = useState<string>('all');
 
   const filteredOrders =
