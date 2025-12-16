@@ -12,7 +12,7 @@ import {
 import { AppHeader } from './header';
 import { SidebarNav } from './sidebar-nav';
 import { Button } from '../ui/button';
-import { LogOut, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import Link from 'next/link';
 
 export function MainLayout({ children }: { children: ReactNode }) {
@@ -33,10 +33,6 @@ export function MainLayout({ children }: { children: ReactNode }) {
           <Button variant="ghost" className="w-full justify-start gap-2">
             <Settings />
             Settings
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-2">
-            <LogOut />
-            Log Out
           </Button>
         </SidebarFooter>
       </Sidebar>
