@@ -97,7 +97,7 @@ export function OrderDetailsClient({ order }: OrderDetailsClientProps) {
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <Button asChild>
-              <Link href={`/order/${order.id}/label`}>
+              <Link href={`/order/${order.id}/label`} target="_blank" rel="noopener noreferrer">
                 <FileText />
                 Generate Shipping Label
               </Link>
